@@ -6,7 +6,7 @@ myDatabase = mysql.connector.connect(
     host="localhost",
     user="root",
     password="1234567890",
-    database="BTL_TRI_THUC"
+    database="BTL_TRI_THUC"  
 )
 
 class RetrieveData:
