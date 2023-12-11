@@ -2,30 +2,31 @@ import re
 
 import mysql.connector
 import json
-mydb = mysql.connector.connect(
+myDatabase = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="huyinit",
-    database="chtdttt"
+    password="1234567890",
+    database="BTL_TRI_THUC"
 )
 
-
-class ConvertData:
+class RetrieveData:
     """
     Truy vấn và xử lý dữ liệu
     """
     def __init__(self):
-        self.resultbenh = []
-        self.resulttrieutrung = []
-        self.resultfc = []
-        self.resultbc = []
-        self.resulttt = []
+        self.eventList = []
+        self.eventCharacteristicList = []
+        self.bodyList = []
+        self.skinColorList = []
+        self.skinToneList = []
+        self.forwardChainingList = []
+        self.backwardChainingList = []
 
-    def convertbenh(self):
+    def retrieveEvent(self):
         """
-        Lấy dữ liệu bảng bệnh
+        Lấy dữ liệu sự kiện
         """
-        dbbenh = mydb.cursor()
+        dbbenh = myDatabase.cursor()
         dbbenh.execute("SELECT * FROM chtdttt.benh;")
         benh = dbbenh.fetchall()
         dirbenh = {}
@@ -37,11 +38,11 @@ class ConvertData:
             self.resultbenh.append(dirbenh)
             dirbenh = {}
 
-    def converttrieuchung(self):
+    def retrieveEventCharacteristic(self):
         """
         Lấy dữ liệu từ bảng trieuchung
         """
-        dbtrieuchung = mydb.cursor()
+        dbtrieuchung = myDatabase.cursor()
         dbtrieuchung.execute("SELECT * FROM chtdttt.trieuchung;")
         trieuchung = dbtrieuchung.fetchall()
         dirtrieuchung = {}
@@ -52,11 +53,21 @@ class ConvertData:
             self.resulttrieutrung.append(dirtrieuchung)
             dirtrieuchung = {}
 
-    def getfc(self):
+    def retrieveBody(self):
+        
+    
+    def retrieveSkinColor(self):
+        
+    
+    def retrieveSkinTone(self):
+        
+
+    # not use
+    def getForwardChaining(self):
         """
         Nhóm các bệnh cùng 1 triệu chứng
         """
-        dbfc = mydb.cursor()
+        dbfc = myDatabase.cursor()
         dbfc.execute(
             "select idsuydien, luat.idluat, idtrieuchung, idbenh, trangthai from suydien, luat where suydien.idluat=luat.idluat and trangThai='1'")
         fc = dbfc.fetchall()
@@ -81,11 +92,11 @@ class ConvertData:
                 benh.append(d[i])
                 dicfc = {}
 
-    def getbc(self):
+    def getBackwardChaining(self):
         """
         Nhóm các triệu chứng cùng 1 bệnh
         """
-        dbbc = mydb.cursor()
+        dbbc = myDatabase.cursor()
         dbbc.execute("select idsuydien, luat.idluat, idtrieuchung, idbenh, trangthai from suydien, luat where suydien.idluat=luat.idluat and trangThai='0' order by idbenh")
         fc = dbbc.fetchall()
         rule = []
@@ -115,73 +126,6 @@ class ConvertData:
                 tt = []
                 tt.append(s[i])
                 dicbc = {}
-
-    def groupbc(self):
-        """
-        
-        """
-        p = []
-        vt = self.resultbc[0]['benh']
-        temp = []
-        for i in self.resultbc:
-            t = []
-            t.append(i['benh'])
-            for j in i['trieuchung']:
-                t.append(j)
-            temp.append(t)
-        return temp
-
-    def groupfc(self):
-        res = []
-        for i in self.resultfc:
-            for j in range(len(i['benh'])):
-                res.append([i['benh'][j], i['trieuchung']])
-        return res
-
-    def gettrieuchung(self):
-        """
-        Nhóm tất cả triệu chứng trong 1 bệnh
-        """
-        dbtrieuchung=mydb.cursor()
-        dbtrieuchung.execute("SELECT * FROM chtdttt.suydien order by idbenh")
-        dttt=dbtrieuchung.fetchall()
-        benh=[]
-        tt=[]
-        rule=[]
-        for i in dttt:
-            benh.append(i[3])
-            tt.append(i[2])
-            rule.append(i[1])
-        vtbenh=benh[0]
-        lstt=[]
-        dirtt={}
-        
-        for i in range(len(benh)):
-            if benh[i]==vtbenh:
-                lstt.append(tt[i])
-            else:
-                dirtt[vtbenh]=sorted(set(lstt))
-                lstt=[]
-                vtbenh=benh[i]
-                lstt.append(tt[i])
-        dirtt[vtbenh]=sorted(set(lstt))
-        self.resulttt=dirtt
-        return self.resulttt
-    
-    def get_benh_by_id(self, id_benh):
-        """
-        Tìm bệnh dựa trên id
-        """
-        for i in self.resultbenh:
-            if i["idbenh"] == id_benh:
-                return i
-        return 0
-
-    def get_trieuchung_by_id(self, id_trieuchung):
-        for i in self.resulttrieutrung:
-            if i["idtrieuchung"] == id_trieuchung:
-                return i
-        return 0
 
 class Validate:
     def __init__(self) -> None:
